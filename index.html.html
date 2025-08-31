@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Calculadora de Servicios</title>
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      margin: 0; 
+      padding: 32px; 
+      background: #f4f6f9;
+      color: #333;
+    }
+    .contenedor { 
+      max-width: 520px; 
+      margin: 0 auto; 
+      background: #fff; 
+      padding: 24px; 
+      border-radius: 12px; 
+      box-shadow: 0 10px 24px rgba(0,0,0,.06);
+    }
+    h1 { color: #0d47a1; margin-top: 0; }
+    label { display: block; margin-top: 14px; font-weight: 600; }
+    select, input { 
+      margin-top: 6px; 
+      padding: 10px; 
+      width: 100%; 
+      border: 1px solid #d6dde7; 
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
+    button { 
+      margin-top: 20px; 
+      padding: 12px 20px; 
+      background: #0d47a1; 
+      color: #fff; 
+      border: none; 
+      border-radius: 10px; 
+      cursor: pointer; 
+      font-weight: 700;
+      width: 100%;
+    }
+    button:hover { background: #0b3d8e; }
+    #resultado { margin-top: 22px; font-weight: bold; font-size: 20px; color: #111; }
+    .nota { color: #5b6b7a; font-size: 12px; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <div class="contenedor">
+    <h1>Calculadora de Servicios</h1>
+
+    <label>Metros (m²):</label>
+    <input type="number" id="metros" min="1" max="1000" placeholder="Introduce los metros">
+
+    <label>Reportaje nocturno:</label>
+    <select id="nocturno">
+      <option>No</option>
+      <option>Sí</option>
+    </select>
+
+    <label>Dron:</label>
+    <select id="dron">
+      <option>No</option>
+      <option>Sí</option>
+    </select>
+
+    <label>Matterport:</label>
+    <select id="matterport">
+      <option>No</option>
+      <option>Sí</option>
+    </select>
+
+    <button onclick="calcular()">Calcular</button>
+
+    <div id="resultado"></div>
+    <div class="nota">* Cálculo sin IVA. Tarifas basadas en tu hoja Excel (Fotografía/Vídeo: E24–E28; Matterport: B24–B28; extras B10 y B11).</div>
+  </div>
+
+  <script>
+    function calcular() {
+      const metros = parseInt(document.getElementById('metros').value);
+      if (isNaN(metros)) {
+        document.getElementById("resultado").innerText = "Introduce un número de metros.";
+        return;
+      }
+      let precioBase = 0;
+      let total = 0;
+
+      // Tarifas base (columna E en tu Excel)
+      if (metros <= 150) precioBase = 180;
+      else if (metros <= 300) precioBase = 240;
+      else if (metros <= 500) precioBase = 320;
+      else if (metros <= 750) precioBase = 400;
+      else if (metros <= 1000) precioBase = 500;
+      else {
+        document.getElementById("resultado").innerText = "❌ Metros fuera de rango (máx. 1000)";
+        return;
+      }
+
+      total = precioBase;
+
+      // Extras fijos según hoja Calculadora (B10, B11)
+      const nocturno = document.getElementById("nocturno").value === "Sí";
+      const dron = document.getElementById("dron").value === "Sí";
+      const matterport = document.getElementById("matterport").value === "Sí";
+
+      if (nocturno) total += 100; // B10
+      if (dron) total += 100;     // B11
+
+      // Matterport por tramos (columna B en tu Excel)
+      if (matterport) {
+        if (metros <= 150) total += 100;
+        else if (metros <= 300) total += 120;
+        else if (metros <= 500) total += 150;
+        else if (metros <= 750) total += 200;
+        else if (metros <= 1000) total += 250;
+      }
+
+      document.getElementById("resultado").innerText = "✅ Total sin IVA: " + total + " €";
+    }
+  </script>
+</body>
+</html>
